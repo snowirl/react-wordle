@@ -5,6 +5,7 @@ import Keyboard from "./components/Keyboard";
 import WordRow from "./components/WordRow";
 import { WordleWord } from "../typings.ts";
 import { useEffect } from "react";
+import toast, { Toaster, resolveValue } from "react-hot-toast";
 
 // https://wordle-api.cyclic.app/words WORDLE API
 
@@ -15,10 +16,43 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [correctWord, setCorrectWord] = useState<string>("Space");
+  const [correctLetters, setCorrectLetters] = useState<string[]>([]);
+  const [foundLetters, setFoundLetters] = useState<string[]>([]);
+  const [wrongLetters, setWrongLetters] = useState<string[]>([]);
+  const [gameOver, setGameOver] = useState(false);
+
+  const congratsText = [
+    "Genius",
+    "Magnificent",
+    "Impressive",
+    "Splendid",
+    "Great",
+    "Phew",
+  ];
 
   useEffect(() => {
     fetchData();
   }, []);
+
+  useEffect(() => {
+    const handleKeyDown = (event: { key: string }) => {
+      const key = event.key.toLowerCase();
+      if (/^[a-z]$/.test(key)) {
+        handleLetterClick(key);
+      } else if (key === "backspace") {
+        // Handle backspace key
+        handleBack();
+      } else if (key === "enter") {
+        handleEnter();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [selectedLetters, row]);
 
   const fetchData = async () => {
     try {
@@ -57,8 +91,11 @@ function App() {
   };
 
   const handleLetterClick = (letter: string) => {
+    if (row > 5 || gameOver) {
+      return;
+    }
     if (selectedLetters.length < (row + 1) * 5) {
-      setSelectedLetters([...selectedLetters, letter]);
+      setSelectedLetters([...selectedLetters, letter.toUpperCase()]);
     }
 
     console.log(letter);
@@ -66,6 +103,9 @@ function App() {
   };
 
   const handleBack = () => {
+    if (gameOver) {
+      return;
+    }
     if ((row + 0) * 5 < selectedLetters.length) {
       setSelectedLetters((prevSelectedLetters) =>
         prevSelectedLetters.slice(0, -1)
@@ -74,17 +114,69 @@ function App() {
   };
 
   const handleEnter = () => {
+    if (row > 5 || gameOver) {
+      return;
+    }
+
     if (data !== null) {
       const letters = selectedLetters.slice(row * 5, (row + 1) * 5);
       const word = letters.join("").toLowerCase();
+
+      if (word.length < 5) {
+        toast("Not enough letters");
+        return;
+      }
 
       console.log(word);
 
       if (data.some((e) => e.word === word)) {
         console.log("FOUND!");
-        setRow(row + 1);
+        checkWord(word.toUpperCase());
+        checkRound(word);
       } else {
         console.log("NOT FOUND!");
+        toast("Not in word list");
+      }
+    }
+  };
+
+  const checkWord = (word: string) => {
+    let found = foundLetters;
+    let correct: string[] = correctLetters;
+    let wrong = wrongLetters;
+
+    for (let i = 0; i < word.length; i++) {
+      const letter = word[i];
+
+      if (correctWord.includes(letter)) {
+        found.push(letter);
+        if (correctWord[i] === letter) {
+          correct.push(letter);
+          console.log("Found.");
+        }
+      } else {
+        wrong.push(letter);
+      }
+
+      setCorrectLetters(correct);
+      setWrongLetters(wrong);
+      setFoundLetters(found);
+    }
+  };
+
+  const checkRound = (word: string) => {
+    if (word.toLowerCase() === correctWord.toLowerCase()) {
+      console.log("WINNER!");
+      toast(congratsText[row]);
+      setRow(row + 1);
+      setGameOver(true);
+    } else {
+      if (row < 5) {
+        setRow(row + 1);
+      } else {
+        setRow(row + 1);
+        setGameOver(true);
+        toast("Next time");
       }
     }
   };
@@ -93,6 +185,13 @@ function App() {
     <>
       <div>
         <Header />
+        <Toaster>
+          {(t) => (
+            <div className="bg-gray-900 text-white px-4 py-2 rounded-sm text-sm">
+              {resolveValue(t.message, t)}
+            </div>
+          )}
+        </Toaster>
         <div className="flex items-center justify-center w-full mt-6">
           <div className="space-y-1.5">
             <WordRow
@@ -141,6 +240,9 @@ function App() {
             handleEnter={handleEnter}
             correctWord={correctWord}
             selectedLetters={selectedLetters}
+            correctLetters={correctLetters}
+            foundLetters={foundLetters}
+            wrongLetters={wrongLetters}
           />
         </div>
       </div>

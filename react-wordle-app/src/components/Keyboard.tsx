@@ -5,6 +5,9 @@ interface KeyboardProps {
   correctWord: string;
   selectedLetters: string[];
   row: number;
+  correctLetters: string[];
+  foundLetters: string[];
+  wrongLetters: string[];
 }
 
 const Keyboard = (props: KeyboardProps) => {
@@ -27,7 +30,15 @@ const Keyboard = (props: KeyboardProps) => {
         >
           {row.map((letter) => (
             <button
-              className={`text-xl  mx-1 my-1 rounded-md font-bold w-11 h-14 bg-gray-300 `}
+              className={` text-xl  mx-1 my-1 rounded-md font-bold md:w-11 md:h-14 w-8 h-12  ${
+                props.correctLetters.includes(letter)
+                  ? "bg-green-600 text-white"
+                  : props.foundLetters.includes(letter)
+                  ? "bg-yellow-500 text-white"
+                  : props.wrongLetters.includes(letter)
+                  ? "bg-zinc-600 text-white"
+                  : "bg-gray-300"
+              } `}
               key={letter}
               onClick={() => handleClick(letter)}
             >
@@ -39,7 +50,7 @@ const Keyboard = (props: KeyboardProps) => {
       <div className="absolute bottom-0 -left-2">
         <button
           onClick={props.handleEnter}
-          className="text-sm bg-gray-300 mx-1 my-1 rounded-md font-bold w-20 h-14"
+          className="text-sm bg-gray-300 mx-1 my-1 rounded-md font-bold md:w-20 md:h-14 w-[60px] h-12"
         >
           ENTER
         </button>
@@ -47,7 +58,7 @@ const Keyboard = (props: KeyboardProps) => {
       <div className="absolute bottom-0 -right-2">
         <button
           onClick={props.handleBack}
-          className="flex items-center justify-center text-sm bg-gray-300 mx-1 my-1 rounded-md font-bold w-20 h-14"
+          className="flex items-center justify-center text-sm bg-gray-300 mx-1 my-1 rounded-md font-bold md:w-20 md:h-14 w-[60px] h-12"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
