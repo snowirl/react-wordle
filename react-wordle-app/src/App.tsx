@@ -6,15 +6,16 @@ import WordRow from "./components/WordRow";
 import { WordleWord } from "../typings.ts";
 import { useEffect } from "react";
 import toast, { Toaster, resolveValue } from "react-hot-toast";
+import "@fontsource/roboto/500.css";
+import { motion } from "framer-motion";
 
 // https://wordle-api.cyclic.app/words WORDLE API
 
 function App() {
   const [row, setRow] = useState(0);
   const [selectedLetters, setSelectedLetters] = useState<string[]>([]);
-  const [data, setData] = useState<WordleWord[] | null>(null);
+  const [data, setData] = useState<string[] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
   const [correctWord, setCorrectWord] = useState<string>("Space");
   const [correctLetters, setCorrectLetters] = useState<string[]>([]);
   const [foundLetters, setFoundLetters] = useState<string[]>([]);
@@ -31,7 +32,8 @@ function App() {
   ];
 
   useEffect(() => {
-    fetchData();
+    fetchDictionary();
+    fetchCorrectWordAPI();
   }, []);
 
   useEffect(() => {
@@ -54,10 +56,9 @@ function App() {
     };
   }, [selectedLetters, row]);
 
-  const fetchData = async () => {
+  const fetchDictionary = async () => {
     try {
-      // Fetch data from an API endpoint
-      const response = await fetch("https://wordle-api.cyclic.app/words");
+      const response = await fetch(`/src/assets/dictionary.json`);
 
       // Check if the response is successful (status code 200)
       if (!response.ok) {
@@ -65,11 +66,30 @@ function App() {
       }
 
       // Parse response data
-      const responseData = (await response.json()) as WordleWord[];
+      const responseData = await response.json();
 
       // Set fetched data to state
       console.log(responseData);
       setData(responseData);
+
+      setIsLoading(false);
+    } catch (error) {
+      // Handle errors
+      console.log(error);
+      setIsLoading(false);
+    }
+  };
+
+  const fetchCorrectWordAPI = async () => {
+    try {
+      const response = await fetch("https://wordle-api.cyclic.app/words");
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      // Parse response data
+      const responseData = (await response.json()) as WordleWord[];
 
       const currentDate: Date = new Date();
       const currentDayOfYear: number =
@@ -80,13 +100,9 @@ function App() {
         ) + 1; // Adding 1 because the first day of the year is 1, not 0
 
       setCorrectWord(responseData[currentDayOfYear].word.toUpperCase());
-      console.log(responseData[currentDayOfYear].word);
-
-      setIsLoading(false);
-    } catch (error) {
-      // Handle errors
-      console.log(error);
-      setIsLoading(false);
+      console.log(responseData[currentDayOfYear]);
+    } catch (e) {
+      console.log(e);
     }
   };
 
@@ -114,7 +130,7 @@ function App() {
   };
 
   const handleEnter = () => {
-    if (row > 5 || gameOver) {
+    if (row > 5 || gameOver || isLoading) {
       return;
     }
 
@@ -123,18 +139,20 @@ function App() {
       const word = letters.join("").toLowerCase();
 
       if (word.length < 5) {
+        toast.remove();
         toast("Not enough letters");
         return;
       }
 
       console.log(word);
 
-      if (data.some((e) => e.word === word)) {
+      if (data.some((e) => e === word)) {
         console.log("FOUND!");
         checkWord(word.toUpperCase());
         checkRound(word);
       } else {
         console.log("NOT FOUND!");
+        toast.remove();
         toast("Not in word list");
       }
     }
@@ -167,6 +185,7 @@ function App() {
   const checkRound = (word: string) => {
     if (word.toLowerCase() === correctWord.toLowerCase()) {
       console.log("WINNER!");
+      toast.remove();
       toast(congratsText[row]);
       setRow(row + 1);
       setGameOver(true);
@@ -176,23 +195,29 @@ function App() {
       } else {
         setRow(row + 1);
         setGameOver(true);
-        toast("Next time");
+        toast.remove();
+        toast(correctWord, { duration: Infinity });
       }
     }
   };
 
   return (
     <>
-      <div>
+      <div className="min-h-screen bg-white dark:bg-[#121212] dark:text-white/90 text-black">
         <Header />
-        <Toaster>
+        <Toaster position="top-center">
           {(t) => (
-            <div className="bg-gray-900 text-white px-4 py-2 rounded-sm text-sm">
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0.95, y: -20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              // transition={{ duration: 0.1 }}
+              className="absolute top-8 shadow-md bg-zinc-900 dark:bg-white dark:text-black/90 text-white px-4 py-2 rounded-sm text-sm"
+            >
               {resolveValue(t.message, t)}
-            </div>
+            </motion.div>
           )}
         </Toaster>
-        <div className="flex items-center justify-center w-full mt-6">
+        <div className="  flex items-center justify-center w-full mt-6">
           <div className="space-y-1.5">
             <WordRow
               index={0}
@@ -239,7 +264,6 @@ function App() {
             handleBack={handleBack}
             handleEnter={handleEnter}
             correctWord={correctWord}
-            selectedLetters={selectedLetters}
             correctLetters={correctLetters}
             foundLetters={foundLetters}
             wrongLetters={wrongLetters}
