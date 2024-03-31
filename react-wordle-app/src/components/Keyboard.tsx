@@ -29,7 +29,7 @@ const Keyboard = (props: KeyboardProps) => {
         >
           {row.map((letter) => (
             <button
-              className={` text-xl  mx-1 my-1 rounded-md font-bold md:w-11 md:h-14 w-9 h-12  ${
+              className={` md:text-xl  mx-1 my-1 rounded-md font-bold md:w-11 md:h-14 w-7   h-10 text-base  ${
                 props.correctLetters.includes(letter)
                   ? "bg-green-700/80 text-white"
                   : props.foundLetters.includes(letter)
@@ -46,18 +46,18 @@ const Keyboard = (props: KeyboardProps) => {
           ))}
         </div>
       ))}
-      <div className="absolute bottom-0 md:-left-2">
+      <div className="absolute bottom-0 md:-left-2 -left-3.5">
         <button
           onClick={props.handleEnter}
-          className="text-sm bg-gray-300 dark:bg-zinc-500 mx-1 my-1 rounded-md font-bold md:w-20 md:h-14 w-[60px] h-12"
+          className="md:text-sm text-xs bg-gray-300 dark:bg-zinc-500 mx-1 my-1 rounded-md font-bold md:w-20 md:h-14 w-[60px] h-10"
         >
           ENTER
         </button>
       </div>
-      <div className="absolute bottom-0 md:-right-2 right-0">
+      <div className="absolute bottom-0 md:-right-2 -right-3.5">
         <button
           onClick={props.handleBack}
-          className="flex items-center justify-center text-sm dark:bg-zinc-500 bg-gray-300 mx-1 my-1 rounded-md font-bold md:w-20 md:h-14 w-[60px] h-12"
+          className="flex items-center justify-center text-sm dark:bg-zinc-500 bg-gray-300 mx-1 my-1 rounded-md font-bold md:w-20 md:h-14 w-[60px] h-10"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -65,7 +65,7 @@ const Keyboard = (props: KeyboardProps) => {
             viewBox="0 0 24 24"
             stroke-width="2"
             stroke="currentColor"
-            className="w-6 h-6"
+            className="md:w-6 md:h-6 w-5 h-5"
           >
             <path
               stroke-linecap="round"

@@ -7,7 +7,7 @@ import { WordleWord } from "../typings.ts";
 import { useEffect } from "react";
 import toast, { Toaster, resolveValue } from "react-hot-toast";
 import "@fontsource/roboto/500.css";
-import { motion } from "framer-motion";
+import { motion, useAnimation } from "framer-motion";
 
 // https://wordle-api.cyclic.app/words WORDLE API
 
@@ -21,6 +21,8 @@ function App() {
   const [foundLetters, setFoundLetters] = useState<string[]>([]);
   const [wrongLetters, setWrongLetters] = useState<string[]>([]);
   const [gameOver, setGameOver] = useState(false);
+
+  const animationControls = Array.from({ length: 6 }, () => useAnimation());
 
   const congratsText = [
     "Genius",
@@ -71,12 +73,9 @@ function App() {
       // Set fetched data to state
       console.log(responseData);
       setData(responseData);
-
-      setIsLoading(false);
     } catch (error) {
       // Handle errors
       console.log(error);
-      setIsLoading(false);
     }
   };
 
@@ -100,9 +99,11 @@ function App() {
         ) + 1; // Adding 1 because the first day of the year is 1, not 0
 
       setCorrectWord(responseData[currentDayOfYear].word.toUpperCase());
+      setIsLoading(false);
       console.log(responseData[currentDayOfYear]);
     } catch (e) {
       console.log(e);
+      setIsLoading(false);
     }
   };
 
@@ -141,6 +142,7 @@ function App() {
       if (word.length < 5) {
         toast.remove();
         toast("Not enough letters");
+        shakeRow();
         return;
       }
 
@@ -154,8 +156,19 @@ function App() {
         console.log("NOT FOUND!");
         toast.remove();
         toast("Not in word list");
+        shakeRow();
       }
     }
+  };
+
+  const shakeRow = async () => {
+    await animationControls[row].start({
+      x: [-2, 2, -2, 2, -2, 0],
+      transition: {
+        duration: 0.5,
+        ease: "linear",
+      },
+    });
   };
 
   const checkWord = (word: string) => {
@@ -219,42 +232,54 @@ function App() {
         </Toaster>
         <div className="  flex items-center justify-center w-full mt-6">
           <div className="space-y-1.5">
-            <WordRow
-              index={0}
-              row={row}
-              correctWord={correctWord}
-              selectedLetters={selectedLetters.slice(0, 5)}
-            />
-            <WordRow
-              index={1}
-              row={row}
-              correctWord={correctWord}
-              selectedLetters={selectedLetters.slice(5, 10)}
-            />
-            <WordRow
-              index={2}
-              row={row}
-              correctWord={correctWord}
-              selectedLetters={selectedLetters.slice(10, 15)}
-            />
-            <WordRow
-              index={3}
-              row={row}
-              correctWord={correctWord}
-              selectedLetters={selectedLetters.slice(15, 20)}
-            />
-            <WordRow
-              index={4}
-              row={row}
-              correctWord={correctWord}
-              selectedLetters={selectedLetters.slice(20, 25)}
-            />
-            <WordRow
-              index={5}
-              row={row}
-              correctWord={correctWord}
-              selectedLetters={selectedLetters.slice(25, 30)}
-            />
+            <motion.div animate={animationControls[0]}>
+              <WordRow
+                index={0}
+                row={row}
+                correctWord={correctWord}
+                selectedLetters={selectedLetters.slice(0, 5)}
+              />
+            </motion.div>
+            <motion.div animate={animationControls[1]}>
+              <WordRow
+                index={1}
+                row={row}
+                correctWord={correctWord}
+                selectedLetters={selectedLetters.slice(5, 10)}
+              />
+            </motion.div>
+            <motion.div animate={animationControls[2]}>
+              <WordRow
+                index={2}
+                row={row}
+                correctWord={correctWord}
+                selectedLetters={selectedLetters.slice(10, 15)}
+              />
+            </motion.div>
+            <motion.div animate={animationControls[3]}>
+              <WordRow
+                index={3}
+                row={row}
+                correctWord={correctWord}
+                selectedLetters={selectedLetters.slice(15, 20)}
+              />
+            </motion.div>
+            <motion.div animate={animationControls[4]}>
+              <WordRow
+                index={4}
+                row={row}
+                correctWord={correctWord}
+                selectedLetters={selectedLetters.slice(20, 25)}
+              />
+            </motion.div>
+            <motion.div animate={animationControls[5]}>
+              <WordRow
+                index={5}
+                row={row}
+                correctWord={correctWord}
+                selectedLetters={selectedLetters.slice(25, 30)}
+              />
+            </motion.div>
           </div>
         </div>
         <div className="flex items-center justify-center w-full mt-4">
