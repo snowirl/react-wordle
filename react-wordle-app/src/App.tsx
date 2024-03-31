@@ -60,7 +60,9 @@ function App() {
 
   const fetchDictionary = async () => {
     try {
-      const response = await fetch(`/src/assets/dictionary.json`);
+      const response = await fetch(`/src/assets/dictionary.json`, {
+        mode: "cors",
+      });
 
       // Check if the response is successful (status code 200)
       if (!response.ok) {
@@ -76,6 +78,7 @@ function App() {
     } catch (error) {
       // Handle errors
       console.log(error);
+      console.log("dictionary error.");
     }
   };
 
@@ -134,7 +137,6 @@ function App() {
 
   const handleEnter = () => {
     if (row > 5 || gameOver || isLoading) {
-      console.log(data);
       return;
     }
 
