@@ -60,7 +60,7 @@ function App() {
 
   const fetchDictionary = async () => {
     try {
-      const response = await fetch(`/src/assets/dictionary.json`, {
+      const response = await fetch(`./dictionary.json`, {
         mode: "cors",
       });
 
