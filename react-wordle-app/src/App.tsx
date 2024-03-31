@@ -81,7 +81,9 @@ function App() {
 
   const fetchCorrectWordAPI = async () => {
     try {
-      const response = await fetch("https://wordle-api.cyclic.app/words");
+      const response = await fetch("https://wordle-api.cyclic.app/words", {
+        mode: "cors",
+      });
 
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -132,6 +134,7 @@ function App() {
 
   const handleEnter = () => {
     if (row > 5 || gameOver || isLoading) {
+      console.log(data);
       return;
     }
 
