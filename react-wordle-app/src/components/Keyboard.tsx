@@ -29,7 +29,7 @@ const Keyboard = (props: KeyboardProps) => {
         >
           {row.map((letter) => (
             <button
-              className={` md:text-xl  mx-1 my-1 rounded-md font-bold md:w-11 md:h-14 w-7   h-10 text-base  ${
+              className={` md:text-xl md:mx-1  mx-[2px] my-1 rounded-md font-bold md:w-11 md:h-14 w-[34px] h-14 text-base  ${
                 props.correctLetters.includes(letter)
                   ? "bg-green-700/80 text-white"
                   : props.foundLetters.includes(letter)
@@ -46,18 +46,18 @@ const Keyboard = (props: KeyboardProps) => {
           ))}
         </div>
       ))}
-      <div className="absolute bottom-0 md:-left-2 -left-3.5">
+      <div className="absolute bottom-0 md:-left-2 -left-0">
         <button
           onClick={props.handleEnter}
-          className="md:text-sm text-xs bg-gray-300 dark:bg-zinc-500 mx-1 my-1 rounded-md font-bold md:w-20 md:h-14 w-[60px] h-10"
+          className="md:text-sm text-xs bg-gray-300 dark:bg-zinc-500 mx-1 my-1 rounded-md font-bold md:w-20 md:h-14 w-[50px] h-14 "
         >
           ENTER
         </button>
       </div>
-      <div className="absolute bottom-0 md:-right-2 -right-3.5">
+      <div className="absolute bottom-0 md:-right-2 -right-0">
         <button
           onClick={props.handleBack}
-          className="flex items-center justify-center text-sm dark:bg-zinc-500 bg-gray-300 mx-1 my-1 rounded-md font-bold md:w-20 md:h-14 w-[60px] h-10"
+          className="flex items-center justify-center text-sm dark:bg-zinc-500 bg-gray-300 mx-1 my-1 rounded-md font-bold md:w-20 md:h-14  w-[50px] h-14"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

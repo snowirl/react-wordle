@@ -13,12 +13,12 @@ const Header = () => {
     console.log(theme);
   };
   return (
-    <div className="flex justify-around p-3.5 border-b-[1px] border-t-0 border-x-0 border-b-black/20 dark:border-b-white/20 border w-full">
+    <div className="flex justify-around  p-3 md:p-3.5 border-b-[1px] border-t-0 border-x-0 border-b-black/20 dark:border-b-white/20 border w-full">
       <div className="flex-grow w-full "></div>
       <div className="flex-grow w-full flex justify-center">
         <p
           style={{ fontFamily: "Merriweather", fontWeight: 800 }}
-          className="text-3xl tracking-tight  font-sans font-semibold text-black/90 dark:text-white/80"
+          className="md:text-3xl  text-2xl tracking-tight  font-sans font-semibold text-black/90 dark:text-white/80"
         >
           Wordle
         </p>

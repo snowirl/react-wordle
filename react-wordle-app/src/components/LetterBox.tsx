@@ -33,7 +33,7 @@ const LetterBox = (props: LetterBoxProps) => {
   return (
     <motion.div
       animate={controls}
-      className={`md:h-[56px] md:w-[56px] h-12 w-12 rounded-[1px] select-none ${
+      className={`md:h-[56px] md:w-[56px] h-14 w-14 rounded-[1px] select-none ${
         props.canCheck && canShow ? "border-none" : "border-2"
       } border-zinc-500/40`}
     >
